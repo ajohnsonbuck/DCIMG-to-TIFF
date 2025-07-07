@@ -1,0 +1,5 @@
+#Ignore large DCIMG file used for testing
+a - 2 - 0.dcimg
+
+#Ignore all TIF files
+*.tif
