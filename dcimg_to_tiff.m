@@ -1,4 +1,4 @@
-function Canceled = dcimg_to_tiff(InputFile,OutputFile,HorizontalFlip,WaitBarMsg)
+function Canceled = dcimg_to_tiff(InputFile,OutputFile,HorizontalFlip,WaitTitle)
 % Args
 % InputFile: string or char of input path + file to DCIMG file
 % OutputFile: string or char of output path + file for TIFF file
@@ -14,7 +14,7 @@ InputFile = char(InputFile);
 TiffOut = Tiff(OutputFile,"w8");
 TagStruct = createTiffTag(Height, Width);
 
-wb = waitbar(0,WaitBarMsg,'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+wb = waitbar(0,strjoin(["Completed 0 of ",num2str(NFrames), " frames."]),'Name',WaitTitle,'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 
 for n = 1:NFrames
     Frame = dcimg_read_frame(InputFile, n);
@@ -22,7 +22,7 @@ for n = 1:NFrames
         Frame = fliplr(Frame);
     end
     
-    waitbar(n/NFrames,wb);
+    waitbar(n/NFrames,wb,strjoin(["Completed ",num2str(n)," of ",num2str(NFrames), " frames."]));
 
     setTag(TiffOut,TagStruct);
     write(TiffOut,Frame);
