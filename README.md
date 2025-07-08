@@ -13,4 +13,6 @@ Download the installation .exe file at ./release/package/.  Run the installation
 2. Click `Choose files...` and select the TIFF files you wish to convert.
 3. Click `Convert` and wait for process to complete.
 
+Note: by default, the application mirrors the horizontal axis for historical reasons, but this can be disabled by unchecking the `Flip image horizontally` checkbox.
+
 ![image](https://github.com/user-attachments/assets/9f08a6f8-af9f-44fe-95c6-475a60caf4fe)
