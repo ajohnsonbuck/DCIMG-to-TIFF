@@ -1,29 +1,37 @@
 function Canceled = dcimg_to_tiff(InputFile,OutputFile,HorizontalFlip,WaitTitle)
 % Args
-% InputFile: string or char of input path + file to DCIMG file
-% OutputFile: string or char of output path + file for TIFF file
-% HorizontalFlip: boolean specifying whether to flip image on horizontal
+% InputFile: (string or char) input path + file to DCIMG file
+% OutputFile: (string or char) output path + file for TIFF file
+% HorizontalFlip: (bool) whether to flip image on horizontal
 % axis
-% WaitBarMsg: message for progress bar
+% WaitTitle: (str) Title for progress bar window
+%
+% Output
+% Canceled (bool): whether conversion has been canceled
 
-Canceled = false; % whether conversion is canceled
-InputFile = char(InputFile);
+Canceled = false;
+InputFile = char(InputFile); % convert to char for compatibility with MEX functions
 
-[Height, Width, NFrames] = dcimg_get_size(InputFile);
+[Height, Width, NFrames] = dcimg_get_size(InputFile); % Get height, width, and number of frames
 
-TiffOut = Tiff(OutputFile,"w8");
+% Initialize TIFF and tag structure
+TiffOut = Tiff(OutputFile,"w8"); 
 TagStruct = createTiffTag(Height, Width);
 
+% Initialize progress bar
 wb = waitbar(0,strjoin(["Completed 0 of ",num2str(NFrames), " frames."]),'Name',WaitTitle,'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 
 for n = 1:NFrames
+    % Read the current frame from the DCIMG file and apply optional flip
     Frame = dcimg_read_frame(InputFile, n);
     if HorizontalFlip == true
         Frame = fliplr(Frame);
     end
     
+    % Update progress bar
     waitbar(n/NFrames,wb,strjoin(["Completed ",num2str(n)," of ",num2str(NFrames), " frames."]));
 
+    % Write TIFF frame
     setTag(TiffOut,TagStruct);
     write(TiffOut,Frame);
     writeDirectory(TiffOut);
@@ -41,6 +49,8 @@ TiffOut.close();
 end
 
 function TagStruct = createTiffTag(Height, Width)
+    % Create tag for TIFF file; currently certain values hardcoded since
+    % can't extract from DCIMG format with existing MEX files
     TagStruct.ImageLength = Height;
     TagStruct.ImageWidth = Width;
     TagStruct.Photometric = 1;
